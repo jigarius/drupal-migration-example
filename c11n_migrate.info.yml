@@ -1,0 +1,10 @@
+# Package info
+name: C11N Migrate
+description: Module for performing site-specific migrations.
+type: module
+core: 8.x
+
+# Dependencies
+dependencies:
+  - migrate
+  - migrate_source_csv
