@@ -1,0 +1,10 @@
+# Import data
+
+For the module to work, please move the _program-data_ directory to the _files/import_ directory of the site you are working with.
+
+I have included migration source data (the CSV file and the associated image files) in the module's directory just to be able to pack everything together and push it to the GitHub repo for making it available to you. However, the project expects the _program-data_ directory to be located in the _public://import_ directory of the site you are working with. Hence, the files should be arranged such that, the _programs.csv_ file is located at _public://import/program-data/programs.csv_. This is mainly because of the following reasons:
+
+- You can place your custom import source files in one common directory, namely, _public://import_. This would allow you to place a .htaccess file in the _import_ directory and prevent HTTP access to those files.
+- You code and data sources remain apart. You can change your code and push it to your code repositories without worrying about data sources provided by the client. Source data, which is often many giga bytes and subject to changes, won't get in the way of your code.
+- The "modules" directories are usually not writable as a security measure. If your data sources are in a safe and writable directory, may be you can build build a UI for source data upload (CSV uploads) so that the client can upload source data on their own and re-run the migrations when required.
+- For reading files from the _files_ directory of the site we can directly specify the CSV source path as _public://import/program-data/programs.csv_, however if the file were not in the _files_ directory, we would have had to do some additional coding to make the migration understand our custom path.
