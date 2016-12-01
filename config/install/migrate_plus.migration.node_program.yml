@@ -1,0 +1,154 @@
+# Migration file for creating "program" nodes from CSV.
+#
+# This file contains much of the information which we
+# used to specify in the "Migration" class in Drupal 7.
+# But why write code if you can write YAML?
+# This is how we declare a Migration the Drupal 8 way.
+
+# An identifier for the migration.
+#
+# Usually the ID indicates what we are trying to migrate.
+# In our case, we are migrating nodes of type "program".
+id: program
+# Human-readable name of the migration for the UI.
+label: Academic programs and associated data.
+# Define migration group.
+#
+# Migration groups allow us to put related migrations under one
+# umbrella so that we can execute or reference them together.
+migration_group: c11n
+# Define data source.
+#
+# Under the source, we define the key "plugin" and other
+# configurations specific to the plugin.
+source:
+  # We will be importing from a CSV file, so we will require
+  # the migrate_source_csv module which introduces the CSV
+  # source plugin with the identifier "csv".
+  plugin: csv
+  # Specify the path to the CSV data source.
+  path: 'public://import/program-data/programs.csv'
+  # Number of rows at the beginning which are not actual data.
+  header_row_count: 1
+  # These are the column names from the CSV file representing the
+  # unique identifier for each source record. These will be used
+  # by the Migration API to relate source records to migrated
+  # entities usually for an updating imported records or for performing
+  # rollbacks.
+  keys:
+    - ID
+  # Definitions for fields available in the source.
+  #
+  # This is an optional configuration but it makes the UI more
+  # explanatory. It is a set of key-value pairs where the key
+  # is the property name and the value is a string describing what
+  # the property is all about.
+  fields:
+    ID: Unique identifier for the program as in the data source.
+    Title: Name of the program.
+    Body: A description for the program.
+    Level: Whether the program is for undergraduates or graduates.
+    Type: Whether it is a full-time or a part-time program.
+    Image file: Name of the image file associated with the program.
+    Image alt: Alternate text for the image for accessibilty.
+    Tags: Comma-separated strings to use as tags.
+    Fees: We will ignore this field as per requirement.
+# Define destination data.
+destination:
+  # We want to import data from a CSV file, but how do we save it?
+  # This plugin will be responsible for storing the records read during
+  # the migration in to nodes. We can also store them as other entities
+  # like taxonomy terms, etc. But in this case we want nodes.
+  plugin: 'entity:node'
+  # We specify the default node type as "program" because
+  # we will only be importing nodes of type "program" in this
+  # migration.
+  default_bundle: program
+# This is where we map destination fields to source fields.
+#
+# We can create simple mappings without any changes to
+# source data or we can pass the source data through one or more
+# plugins before the processed value is assigned to the
+# destination.
+process:
+  # Here, we make a direct assignment of the "Title" column
+  # as the node title. Not specifying a plugin name results in
+  # the usage of the plugin "get" which simply copies the source
+  # property value to the destination property.
+  title: Title
+  # There are certain destination fields which do not have
+  # corresponding source fields. In these cases, we can define
+  # a default value for those fields using the "default_value"
+  # plugin.
+  #
+  # The below segnment makes the imported "program" nodes non-sticky.
+  sticky:
+    plugin: default_value
+    default_value: 0
+  # Similarly, we can define a default user for the imported nodes.
+  uid:
+    plugin: default_value
+    default_value: 1
+  # Some fields have multiple properties! For example, the "body" field
+  # can have the actual full text, a summary, etc. Values can be
+  # assigned to specific properties using the syntax used below. We
+  # wrap the destination property name in quotes to comply with YAML
+  # specifications.
+  #
+  # Unfortunately, at the time of writing this code, there is no UI or
+  # drush migrate-fields-destination. Hence, one might have to refer
+  # to the structure of various field-types for determining the properties
+  # supported by various fields.
+  #
+  # Reference: https://www.drupal.org/node/2630732
+  'body/value': Body
+  # For the "Level" of the program, the source has possible values
+  # "Graduate" or "Undergraduate". However, in the field definition,
+  # we accept only the values "gr" for graduate and "ug" for
+  # undergraduate.
+  #
+  # To transform the value, we can pass it through a series of
+  # plugins to transform the source value to the destination value.
+  field_program_level:
+    # The first plugin we will use will be the "callable" plugin.
+    # It will simply send in the source value "Level" to the "strtolower"
+    # function to get rid of any upper-case characters in the source.
+    #
+    # Unfortunately, the callback plugin does not accept any additional
+    # arguments for the callback, but in our case we don't need them any way.
+    -
+      plugin: callback
+      callable: strtolower
+      source: Level
+    # Once transformed to lower-case, we would like to transform the old
+    # value in to a new one. This switch-case kind of an operation can
+    # be handled by the plugin "static_map" which helps us map existing
+    # values to new values (and more).
+    -
+      plugin: static_map
+      map:
+        graduate: gr
+        undergraduate: ug
+# With the migration_dependencies, as the name suggests, we can specify
+# if this migration requires some other migrations to be run first.
+#
+# For example, say we were importing articles and authors. In the migration
+# of articles, we would need to refer to the newly migrated author data so
+# as to link the author to the article. In that case, the article migration
+# would require that the author migration be run first. Thus, we could say
+# that the article migration depends on the author migration and we would have
+# had to specify a dependency here.
+#
+# In our case, we are demonstrating a simple migration without any entity
+# references, hence, I commented out this block.
+# migration_dependencies:
+#   required:
+#     - author
+
+# We specify that this migration depends on the c11n_migrate module.
+# Based on this dependency, this migration will be removed when the
+# c11n_migrate module is uninstalled.
+dependencies:
+  enforced:
+    module:
+      - c11n_migrate
