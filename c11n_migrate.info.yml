@@ -8,3 +8,6 @@ core: 8.x
 dependencies:
   - migrate
   - migrate_source_csv
+  - migrate_plus
+  - node
+  - taxonomy
