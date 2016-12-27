@@ -129,6 +129,31 @@ process:
       map:
         graduate: gr
         undergraduate: ug
+  # For the "Type" of the program, though we could use a text-list field,
+  # we have set up a taxonomy term reference field. Assuming the vocabulary
+  # exists and we have the names of the terms in the data source (CSV), we
+  # would need to convert the terms into IDs for use during the migration.
+  #
+  # Here, we refer to a custom callback which checks if the term exists. If
+  # the term exists, the callback returns the ID of the existing term,
+  # otherwise, the callback creates the term and returns the ID of the newly
+  # created term. Thus, all terms are imported in the process without much
+  # hassle.
+  #
+  # This approach of importing comma-separated taxonomy terms can also be
+  # used with multiple terms, though we might have to add additional callbacks
+  # or modify our callback for handling splitting of values and converting
+  # each term name into an ID.
+  #
+  # If the "callback" plugin supported additional arguments for the callbacks,
+  # things would have been much easier and we could have added callbacks for
+  # "explode" and "array_walk" using callback declarations without writing
+  # a single line of code! But unfortunately, at the moment additional arguments
+  # are not supported by the callback plugin.
+  field_program_type:
+    plugin: callback
+    callable: _c11n_migrate_process_program_type
+    source: Type
 # With the migration_dependencies, as the name suggests, we can specify
 # if this migration requires some other migrations to be run first.
 #
