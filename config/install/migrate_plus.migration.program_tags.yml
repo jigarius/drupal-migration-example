@@ -1,7 +1,7 @@
 # Migration file for creating "tags" for academic programs.
 #
 # Detailed explanations for various elements of a migration
-# YAML have been provided in migrate_plus.migration.node_program.yml
+# YAML have been provided in migrate_plus.migration.program_data.yml
 
 id: program_tags
 label: Tags associated to academic programs.
