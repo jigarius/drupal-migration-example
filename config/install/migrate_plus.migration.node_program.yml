@@ -144,16 +144,39 @@ process:
   # used with multiple terms, though we might have to add additional callbacks
   # or modify our callback for handling splitting of values and converting
   # each term name into an ID.
-  #
-  # If the "callback" plugin supported additional arguments for the callbacks,
-  # things would have been much easier and we could have added callbacks for
-  # "explode" and "array_walk" using callback declarations without writing
-  # a single line of code! But unfortunately, at the moment additional arguments
-  # are not supported by the callback plugin.
   field_program_type:
     plugin: callback
     callable: _c11n_migrate_process_program_type
     source: Type
+  # For the "Tags" of the program, we need to associate taxonomy terms (tags)
+  # generated during the migration "term_tags". For this, we import all tags
+  # using the "term_tags" migration in migrate_plus.migration.term_tags.yml.
+  field_tags:
+    # First we convert the multiple tag values into an array of tag names
+    # using the explode plugin which simply explodes/splits a string by a given
+    # delimiter. In our case, we split the text by ", " to get rid of the
+    # spaces after the commas at once.
+    -
+      plugin: explode
+      delimiter: ', '
+      source: Tags
+    # Once the tag names are converted to arrays, we pass the term names
+    # through the "migration" plugin. This easy-to-use plugin does the grand
+    # task of looking up the terms we imported during the "term_tags"
+    # migration and utilizes the IDs of those terms during this migration.
+    #
+    # To make things better, it can handle multiple values, so each term
+    # name gets converted into it's relevant ID. Cool!
+    #
+    # The migration plugin can be used when the related entities (like tags)
+    # are available in a separate data source so that they can be imported
+    # first. If they are not available or cannot be extracted to their own
+    # data source for the migration, one would have to write their own
+    # "process" plugin to explode the terms and translate the term names into
+    # their corresponding term IDs.
+    -
+      plugin: migration
+      migration: term_tags
 # With the migration_dependencies, as the name suggests, we can specify
 # if this migration requires some other migrations to be run first.
 #
@@ -164,11 +187,11 @@ process:
 # that the article migration depends on the author migration and we would have
 # had to specify a dependency here.
 #
-# In our case, we are demonstrating a simple migration without any entity
-# references, hence, I commented out this block.
-# migration_dependencies:
-#   required:
-#     - author
+# In our case, we need to import tags first so that we can associate them
+# to the academic programs.
+migration_dependencies:
+  required:
+    - term_tags
 
 # We specify that this migration depends on the c11n_migrate module.
 # Based on this dependency, this migration will be removed when the

@@ -1,0 +1,37 @@
+# Migration file for creating "tags" for academic programs.
+#
+# Detailed explanations for various elements of a migration
+# YAML have been provided in migrate_plus.migration.node_program.yml
+
+id: term_tags
+label: Tags associated to academic programs.
+migration_group: c11n
+# Source.
+source:
+  plugin: csv
+  path: 'public://import/program-data/tags.csv'
+  header_row_count: 1
+  # Unique ID.
+  #
+  # The source for tags does not have any existing unique IDs
+  # as defined. Hence, we use the term names as unique IDs.
+  # This will ensure that every term results in the creation
+  # of a unique taxonomy term in the site.
+  keys:
+    - Title
+  # Source field definitions.
+  fields:
+    Title: The tag.
+# Destination.
+destination:
+  plugin: 'entity:taxonomy_term'
+  # Vocabulary for the terms.
+  default_bundle: tags
+# Mappings.
+process:
+  name: Title
+# Dependencies.
+dependencies:
+  enforced:
+    module:
+      - c11n_migrate
