@@ -3,9 +3,11 @@
 # Detailed explanations for various elements of a migration
 # YAML have been provided in migrate_plus.migration.node_program.yml
 
-id: term_tags
+id: program_tags
 label: Tags associated to academic programs.
 migration_group: c11n
+migration_tags:
+  - academic program
 # Source.
 source:
   plugin: csv

@@ -9,7 +9,7 @@
 #
 # Usually the ID indicates what we are trying to migrate.
 # In our case, we are migrating nodes of type "program".
-id: node_program
+id: program_data
 # Human-readable name of the migration for the UI.
 label: Academic programs and associated data.
 # Migration group.
@@ -17,6 +17,14 @@ label: Academic programs and associated data.
 # Migration groups allow us to put related migrations under one
 # umbrella so that we can execute or reference them together.
 migration_group: c11n
+# Migration tags.
+#
+# Migration tags help us group migrations using tags. In our
+# example, we tag all migrations with an "academic program"
+# tag. That way, we can run all academic-program-related migrations
+# using one command.
+migration_tags:
+  - academic program
 # Source.
 #
 # Under the source, we define the key "plugin" and other
@@ -178,7 +186,8 @@ process:
     # their corresponding term IDs.
     -
       plugin: migration
-      migration: term_tags
+      migration: program_tags
+  # For the "Image" of the program, we need to do some real work.
 # With the migration_dependencies, as the name suggests, we can specify
 # if this migration requires some other migrations to be run first.
 #
@@ -193,7 +202,7 @@ process:
 # to the academic programs.
 migration_dependencies:
   required:
-    - term_tags
+    - program_tags
 
 # We specify that this migration depends on the c11n_migrate module.
 # Based on this dependency, this migration will be removed when the
