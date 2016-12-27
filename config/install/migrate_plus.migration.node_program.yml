@@ -5,19 +5,19 @@
 # But why write code if you can write YAML?
 # This is how we declare a Migration the Drupal 8 way.
 
-# An identifier for the migration.
+# Migration ID.
 #
 # Usually the ID indicates what we are trying to migrate.
 # In our case, we are migrating nodes of type "program".
 id: node_program
 # Human-readable name of the migration for the UI.
 label: Academic programs and associated data.
-# Define migration group.
+# Migration group.
 #
 # Migration groups allow us to put related migrations under one
 # umbrella so that we can execute or reference them together.
 migration_group: c11n
-# Define data source.
+# Source.
 #
 # Under the source, we define the key "plugin" and other
 # configurations specific to the plugin.
@@ -30,6 +30,8 @@ source:
   path: 'public://import/program-data/programs.csv'
   # Number of rows at the beginning which are not actual data.
   header_row_count: 1
+  # Unique ID.
+  #
   # These are the column names from the CSV file representing the
   # unique identifier for each source record. These will be used
   # by the Migration API to relate source records to migrated
@@ -53,7 +55,7 @@ source:
     Image alt: Alternate text for the image for accessibilty.
     Tags: Comma-separated strings to use as tags.
     Fees: We will ignore this field as per requirement.
-# Define destination data.
+# Destination.
 destination:
   # We want to import data from a CSV file, but how do we save it?
   # This plugin will be responsible for storing the records read during
@@ -64,7 +66,7 @@ destination:
   # we will only be importing nodes of type "program" in this
   # migration.
   default_bundle: program
-# This is where we map destination fields to source fields.
+# Mapping.
 #
 # We can create simple mappings without any changes to
 # source data or we can pass the source data through one or more
