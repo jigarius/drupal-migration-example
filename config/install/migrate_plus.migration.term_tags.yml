@@ -9,7 +9,7 @@ migration_group: c11n
 # Source.
 source:
   plugin: csv
-  path: 'public://import/program-data/tags.csv'
+  path: 'public://import/program-data/program.tags.csv'
   header_row_count: 1
   # Unique ID.
   #

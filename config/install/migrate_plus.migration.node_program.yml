@@ -27,7 +27,7 @@ source:
   # source plugin with the identifier "csv".
   plugin: csv
   # Specify the path to the CSV data source.
-  path: 'public://import/program-data/programs.csv'
+  path: 'public://import/program-data/program.data.csv'
   # Number of rows at the beginning which are not actual data.
   header_row_count: 1
   # Unique ID.
