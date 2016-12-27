@@ -9,7 +9,7 @@
 #
 # Usually the ID indicates what we are trying to migrate.
 # In our case, we are migrating nodes of type "program".
-id: program
+id: node_program
 # Human-readable name of the migration for the UI.
 label: Academic programs and associated data.
 # Define migration group.
