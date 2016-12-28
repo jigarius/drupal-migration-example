@@ -218,7 +218,7 @@ process:
 # In our case, we need to import tags first so that we can associate them
 # to the academic programs.
 migration_dependencies:
-  required:
+  optional:
     - program_tags
     - program_image
 # We specify that this migration depends on the c11n_migrate module.
