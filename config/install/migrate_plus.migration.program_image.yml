@@ -1,0 +1,78 @@
+# Migration file for creating "image" for academic programs.
+#
+# Detailed explanations for various elements of a migration
+# YAML have been provided in migrate_plus.migration.program_data.yml
+
+id: program_image
+label: Image associated to academic programs.
+migration_group: c11n
+migration_tags:
+  - academic program
+  - file
+  - image
+# Source.
+source:
+  plugin: csv
+  path: 'public://import/program-data/program.data.csv'
+  header_row_count: 1
+  # Unique ID.
+  #
+  # The source for images do not have any existing unique IDs. Hence,
+  # we use the image name as unique IDs. This will ensure that every
+  # image results in the creation of a unique file entity on the site.
+  keys:
+    - Image file
+  # Source field definitions.
+  fields:
+    Image file: Name of the image file associated with the program.
+  # Since we are writing YAML, we do not have ways to manipulate
+  # fields like we do in PHP. However, we can use migration process
+  # plugins. These plugins can use migration-specific "constants"
+  # to generate file paths and URIs.
+  #
+  # Here, we define constants which we would use to generate file paths
+  # and file names for program images.
+  constants:
+    file_path: public://import/program-data
+    file_uri: 'public://program/image'
+# Destination.
+destination:
+  # We will be creating entities of type "file" this time.
+  plugin: 'entity:file'
+# Mappings.
+process:
+  file_source:
+    -
+      plugin: concat
+      delimiter: /
+      source:
+        - constants/file_path
+        - Image file
+    # Make sure we don't have any url-unfriendly characters.
+    -
+      plugin: urlencode
+  file_dest:
+    -
+      plugin: concat
+      delimiter: /
+      source:
+        - constants/file_uri
+        - Image file
+    # Make sure we don't have any url-unfriendly characters.
+    -
+      plugin: urlencode
+  # We use the image file names as is.
+  #
+  # Alternatively, if we wish to name them after some other
+  # column, we can do it here.
+  filename: Image file
+  uri:
+    plugin: file_copy
+    source:
+      - '@file_source'
+      - '@file_dest'
+# Dependencies.
+dependencies:
+  enforced:
+    module:
+      - c11n_migrate

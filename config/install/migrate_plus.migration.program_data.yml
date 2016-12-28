@@ -188,6 +188,23 @@ process:
       plugin: migration
       migration: program_tags
   # For the "Image" of the program, we need to do some real work.
+  # First, we need to define the "program_image" migration to generate
+  # entities of type "file" for each of the images we wish to use with
+  # the programs. Once done, we use the plugin "migration" just like we
+  # did above for "tags" and associate the file IDs to the "target_id"
+  # property of the "field_image".
+  #
+  # NOTE: It's so cool that the property is no longer "fid" because D8
+  # associates the files as entity references, thereby standardizing
+  # things to a great extent.
+  'field_image/target_id':
+    plugin: migration
+    migration: program_image
+    source: Image file
+  # Now that we have the images in place, we also copy the alternate text
+  # for the images to the "alt" property of "field_image". Having "alt"
+  # would help improve accessibility and SEO.
+  'field_image/alt': Image alt
 # With the migration_dependencies, as the name suggests, we can specify
 # if this migration requires some other migrations to be run first.
 #
@@ -203,7 +220,7 @@ process:
 migration_dependencies:
   required:
     - program_tags
-
+    - program_image
 # We specify that this migration depends on the c11n_migrate module.
 # Based on this dependency, this migration will be removed when the
 # c11n_migrate module is uninstalled.
