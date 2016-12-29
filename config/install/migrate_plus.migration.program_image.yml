@@ -13,7 +13,7 @@ migration_tags:
 # Source.
 source:
   plugin: csv
-  path: 'public://import/program-data/program.data.csv'
+  path: 'public://import/program/program.data.csv'
   header_row_count: 1
   # Unique ID.
   #
@@ -33,7 +33,7 @@ source:
   # Here, we define constants which we would use to generate file paths
   # and file names for program images.
   constants:
-    file_path: public://import/program-data
+    file_path: public://import/program
     file_uri: 'public://program/image'
 # Destination.
 destination:

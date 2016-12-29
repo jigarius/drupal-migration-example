@@ -11,7 +11,7 @@ migration_tags:
 # Source.
 source:
   plugin: csv
-  path: 'public://import/program-data/program.tags.csv'
+  path: 'public://import/program/program.tags.csv'
   header_row_count: 1
   # Unique ID.
   #
