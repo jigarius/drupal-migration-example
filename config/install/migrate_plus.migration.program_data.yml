@@ -112,6 +112,16 @@ process:
   #
   # Reference: https://www.drupal.org/node/2630732
   'body/value': Body
+  # We copied the text into the _value_ for the _body_ field, however,
+  # we did not specify how the text is to be treated. We do that by
+  # specifying the _format_ property of the _body_ field.
+  #
+  # In the line below we tell Drupal to treat the _body_ as full HTML.
+  # Since this value does not come from the data source, we use the default
+  # value plugin again.
+  'body/format':
+    plugin: default_value
+    default_value: restricted_html
   # For the "Level" of the program, the source has possible values
   # "Graduate" or "Undergraduate". However, in the field definition,
   # we accept only the values "gr" for graduate and "ug" for
