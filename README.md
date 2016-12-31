@@ -106,3 +106,27 @@ If you ever wrote a migration in an earlier version of Drupal, you might already
 * **field_program_level:** With this property we get to try out the useful _static_map_ plugin. Here, the source data uses the values _graduate/undergraduate_ whereas the destination field only accepts _gr/ug_. In Drupal 7, we would have written a few lines of code in a _ProgramDataMigration::prepareRow()_ method, but in Drupal 8, we just write some more YAML. Here, we have the plugin specifications as usual, but we have small dashes with which we are actually defining an array of plugins or a _plugin pipeline_. With the first plugin, we call the function _strtolower_ (with `callback: strtolower`) on the _Level_ property (with `source: Level`). Once the old value is in lower case, we pass it through the _static_map_ (with `plugin: static_map`) and define a map of new values which should be used instead of old values (with the `map` element). Done!
 
 With the parameters above, we can write basic migrations with basic data-manipulation. If you wish to see another basic migration, you can take a look at [migrate_plus.migration.program_tags.yml](config/install/migrate_plus.migration.program_tags.yml). In the sections below, I would explain how to do some complex tasks like importing taxonomy terms and their relations with nodes and uploading files / images and associating them with their relevant nodes.
+
+# Migrating taxonomy terms
+
+This section is about migrating relations between two entities. Before jumping to this section, one must ensure that a migration has already been written to import the target entities. In our example, we wish to associate _tags_ (taxonomy terms) to _academic programs_ (nodes). For that, we need to import taxonomy terms and we do that in [migrate_plus.migration.program_tags.yml](config/install/migrate_plus.migration.program_tags.yml). In the migration for _tags_ data, we use the tag text as a unique key for the tags. This is because:
+
+* The tags data-source, [program.tags.csv](import/program/program.tags.csv), does not provide any unique key for the tags.
+* The academic programs data-source, [program.data.csv](import/program/program.tags.csv), refers to the tags using the tag text (instead of unique IDs).
+
+Once the tag data is imported, all we have to do is add some simple lines of YAML in the [migration definition for academic programs](config/install/migrate_plus.migration.program_data.yml) to tell Drupal how to migrate the _field_tags_ property of academic programs. As we did above for _program_level_ we will be specifying multiple plugins for this property:
+
+* **explode:** Taking a look at the data-source, we notice that academic programs have multiple tags separated by commas. So, as a first step, we use the explode plugin which would split/explode the tags by the delimiter _, (comma)_, thereby creating an array of tags. We do this using `plugin: explode` and `delimiter: ', '`.
+* **migration:** Now that we have an array of tags, each tag identifying itself using it's unique tag text, we tell the migrate module that these tags are the same ones we imported in _migrate_plus.migration.program_tags.yml_ and that the tags generated during that migration are to be used here in order to associate them to the academic programs. We do this using `plugin: migration` and `migration: program_tags`.
+
+As simple as it may sound, this is all that is needed to associate the tags to the academic programs!
+
+For the sake of demonstration, I also included an alternative approach using a custom callback. For the sake of demonstration, I use this technique for the migration of _field_program_type_ property. For program type, I wrote a simple function which does the following:
+
+* Takes a tag as an argument and checks if the tag exists in the _program_types_ taxonomy vocabulary.
+* Now, if the tag exists, the function returns the existing taxonomy term ID.
+* And if the tag does not exist, the tag is created and the function returns the newly created taxonomy term's ID.
+
+Finally, for the _process_ instructions for _field_program_type_, I use `plugin: callback` and refer to the custom function `_c11n_migrate_process_program_type`. So, during migration, for every _program type_, the custom callback is called and the custom callback translates the tag text into a taxonomy term ID which is then associated to the academic programs.
+
+To make sure that tag data is imported and available during the academic program migration, we specify the `program_tags` migration in the `migration_dependencies` for the `program_data` migration. Now, when you re-run these migrations, the taxonomy terms get associated to the academic program nodes.
