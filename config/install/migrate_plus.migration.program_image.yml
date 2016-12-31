@@ -33,8 +33,8 @@ source:
   # Here, we define constants which we would use to generate file paths
   # and file names for program images.
   constants:
-    file_path: public://import/program
-    file_uri: 'public://program/image'
+    file_source_uri: public://import/program
+    file_dest_uri: 'public://program/image'
 # Destination.
 destination:
   # We will be creating entities of type "file" this time.
@@ -46,7 +46,7 @@ process:
       plugin: concat
       delimiter: /
       source:
-        - constants/file_path
+        - constants/file_source_uri
         - Image file
     # Make sure we don't have any url-unfriendly characters.
     -
@@ -56,7 +56,7 @@ process:
       plugin: concat
       delimiter: /
       source:
-        - constants/file_uri
+        - constants/file_dest_uri
         - Image file
     # Make sure we don't have any url-unfriendly characters.
     -
