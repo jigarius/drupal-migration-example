@@ -19,6 +19,13 @@ As per project requirements, we wish to import certain data for an educational a
 * **Tags:** We have a CSV file containing details related to tags for these academic programs. We are required to import these as _terms_ of the _vocabulary_ named _tags_.
 * **Images:** We have images for each academic program. The base name of the images are mentioned in the CSV file for academic programs. To make things easy, we have only one image per program.
 
+# Important notes on executing migrations
+
+Before we start with actual migrations, there are certain things which I would point out so as to ensure that you can run your migrations without trouble.
+
+* Migration definitions in Drupal 8 are in YAML files, which is great. But the fact that they are located in the `config/install` directory implies that these YAML files are imported when the module is installed. Hence, any subsequent changes to the YAML files would not be detected untill the module is re-installed. The easiest way to re-install a module during development is using the _devel_ module. After installing the _devel_ module, you can use the `devel/reinstall` page to re-install the _c11n_migrate_ module or do it quickly using drush with the `drush dre c11n_migrate -y` command.
+* While writing a migration, you would usually be updating your migration over and over and re-running them to see how things go. So, to do this quickly, you can re-install the module containing your custom migrations (in this case the _c11n_migrate_ module) and execute the relevant migrations in a single command like `drush dre c11n_migrate -y && drush mi --group=c11n --update`.
+
 # [c11n_migrate.info.yml](c11n_migrate.info.yml)
 
 I usually prefer to name project-specific custom modules with a prefix of _c11n_ (being the numeronym for customization). This way, have a naming convention for custom modules and I can copy any custom module to another site without worrying about having to change prefixes. The fact to be noted is that we have a _.info.yml_ file instead of the _.info_ file we were used to in Drupal 7.
