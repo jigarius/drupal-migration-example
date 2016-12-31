@@ -130,3 +130,32 @@ For the sake of demonstration, I also included an alternative approach using a c
 Finally, for the _process_ instructions for _field_program_type_, I use `plugin: callback` and refer to the custom function `_c11n_migrate_process_program_type`. So, during migration, for every _program type_, the custom callback is called and the custom callback translates the tag text into a taxonomy term ID which is then associated to the academic programs.
 
 To make sure that tag data is imported and available during the academic program migration, we specify the `program_tags` migration in the `migration_dependencies` for the `program_data` migration. Now, when you re-run these migrations, the taxonomy terms get associated to the academic program nodes.
+
+# Migrating files / images
+
+In our example, every academic program has an associated image file. Say, the client wants us to associate these files to the academic programs created during the migration. Though it might sound difficult, the solution involves only two steps:
+
+**Step 1, migrate files**
+
+Ref: [config/install/migrate_plus.migration.program_image.yml](config/install/migrate_plus.migration.program_image.yml)
+
+Like we did with the taxonomy terms above, first we need to create _file_ entities for each file. This is because Drupal treats files as _file_ entities which have their own ID and then Drupal treats node-file associations as entity references, referring to the file entities with their IDs.
+
+We create the file entities in the [migrate_plus.migration.program_image.yml](config/install/migrate_plus.migration.program_image.yml) file, but this time, using some other process plugins. Following are some important notes on the program_image migration:
+
+* We specify the _key_ parameter in _source_ as the column containing file names, ie, _Image file_. This way, we would be refer to these files in other migrations using their names, eg, `engineering.png`.
+* We mention an additional parameter _constants_ in the _source_ element.
+  * _file_source_uri_ is used to refer to the path from which files are to be read during the import.
+  * _file_dest_uri_ is used to refer to the destination path where files should be copied to. The newly created file entities would refer to files stored in this directory.
+* The `public://` URI refers to the _files_ directory inside the site in question. This is where all public files related to the site are stored.
+* In the _process_ element, we prepare two paths - the file source path and the file destination path.
+  * _file_source_ is obtained by concatenating the _file_source_uri_ with the _Image file_ column which stores the file's basename. Using `delimiter: /` we tell the migrate module to join the two strings with a `/ (slash)` in between to ensure we have a valid file name. In short, we do `file_source_uri . '/' . basename` using the `concat` plugin.
+  * _file_dest_, in a similar way, is `file_dest_uri . '/' . basename`. This is where we utilize the constants we defined in the _source_ element.
+* Now, we use the _file_source_ and _file_dest_ paths generated above with `plugin: file_copy`. The _file_copy_ plugin simply copies the files from the `file_source` path to the `file_dest` path. All the steps we did above were just for being able to copy the files.
+* Finally, since the _destination_ of the migration is `entity:file`, the migrate module would use the file created in the previous step to generate a _file_ entity, thereby generating a unique file ID.
+
+**Step 2, associate files:**
+
+Once the heavy-lifting is done and we have our file entities, we need to put the files to use by associating them to academic programs. To do this, we write add processing instructions for `file_image` in [migration_plus.migration.program_data.yml](config/install/migration_plus.migration.program_data.yml). Just like we did for taxonomy terms, we tell the migrate module that the _Image file_ column contains a unique file name, which refers to a file entity created during the _program_image_ migration. Hence, we write `plugin: migration` and `migration: program_image`. And it's done!
+
+To make sure that tag data is imported and available during the academic program migration, we specify the `program_image` migration in the `migration_dependencies` for the `program_data` migration. Now, when you run these migrations, the image files get associated to the academic program nodes.
