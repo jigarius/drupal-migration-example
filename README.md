@@ -1,6 +1,6 @@
 # Drupal 8 Migration Example
 
-Usually when a huge site makes the (wise) decision to migrate to Drupal, one of the biggest concerns of the site owners is _How to migrate the old site's data into the new Drupal site_. The existing old site might or might not be a Drupal site, but given that the new site is on Drupal, we can make use of the cool _migrate_ module to import data from a variety of data sources including but not limited to XML, JSON, CSV and SQL databases.
+Usually when a huge site makes the (wise) decision to migrate to Drupal, one of the biggest concerns of the site owners is _How to migrate the old site's data into the new Drupal site_. The old site might or might not be a Drupal site, but given that the new site is on Drupal, we can make use of the cool _migrate_ module to import data from a variety of data sources including but not limited to XML, JSON, CSV and SQL databases.
 
 This project is an example module showing how to go about importing basic data from a CSV data source though things would work pretty similarly for other types of data sources. Apart from a basic data import, I have also included certain other important things which a migration might involve, for example, import of 2 different types of entities and the relation between them.
 
@@ -19,12 +19,14 @@ As per project requirements, we wish to import certain data for an educational a
 * **Tags:** We have a CSV file containing details related to tags for these academic programs. We are required to import these as _terms_ of the _vocabulary_ named _tags_.
 * **Images:** We have images for each academic program. The base name of the images are mentioned in the CSV file for academic programs. To make things easy, we have only one image per program.
 
-# Important notes on executing migrations
+# Executing migrations
 
 Before we start with actual migrations, there are certain things which I would point out so as to ensure that you can run your migrations without trouble.
 
+* Though the basic migration framework is a part of the D8 core as the migrate module, to be able to execute migrations, you must install the migrate_tools. You can use the command drush mi --all to execute all migrations. In this tutorial, we also install some other modules like [migrate_plus](https://www.drupal.org/project/migrate_plus), [migrate_source_csv](https://www.drupal.org/project/migrate_source_csv).
 * Migration definitions in Drupal 8 are in YAML files, which is great. But the fact that they are located in the `config/install` directory implies that these YAML files are imported when the module is installed. Hence, any subsequent changes to the YAML files would not be detected untill the module is re-installed. The easiest way to re-install a module during development is using the _devel_ module. After installing the _devel_ module, you can use the `devel/reinstall` page to re-install the _c11n_migrate_ module or do it quickly using drush with the `drush dre c11n_migrate -y` command.
 * While writing a migration, you would usually be updating your migration over and over and re-running them to see how things go. So, to do this quickly, you can re-install the module containing your custom migrations (in this case the _c11n_migrate_ module) and execute the relevant migrations in a single command like `drush dre c11n_migrate -y && drush mi --group=c11n --update`.
+* To execute the migrations in this example, you can download the c11n_migrate module and rename the downloaded directory to c11n_migrate. Apart from that, you need to place the import directory inside the project into your site's files directory.
 
 # [c11n_migrate.info.yml](c11n_migrate.info.yml)
 
@@ -64,16 +66,16 @@ In this example, we define a migration group _c11n_ to provide general informati
 
 We can execute all migrations in a given group with the command `drush migrate-import --group=GROUP`.
 
-# Migration definition: Meta-data
+# Migration definition: Metadata
 
 Ref: [migrate_plus.migration.program_data.yml](config/install/migrate_plus.migration.program_data.yml)
 
 Now that we have a module to put our migration scripts in and a migration group for grouping them together, it's time we write a basic migration! To get started, we import basic data about academic programs, ignoring complex stuff such as tags, files, etc. In Drupal 7 we used to do this in a file containing a PHP class which used to extend the _Migration_ class provided by the _migrate_ module. In Drupal 8, like many other things, we do this in a YML file.
 
-In migration declaration file, we declare some meta-data about the migration:
+In migration declaration file, we declare some metadata about the migration:
 
 * **id:** A unique identifier for the migration. In this example, I allocated the ID _program_data_, hence, the migration declaration file has been named migrate_plus.migration._program_data_.yml. We can execute specific migrations with the command `drush migrate-import ID`.
-* **label:** A human-friendly name of the migration as it would in the UI.
+* **label:** A human-friendly name of the migration as it would appear in the UI.
 * **migration_group:** This puts the migration into the migration group _c11n_ we created above. We can execute all migrations in a given group with the command `drush migrate-import --group=GROUP`.
 * **migration_tags:** Here we provide multiple tags for the migration and just like groups, we can execute all migrations with the same tag using the command `drush migrate-import --tag=TAG`
 * **dependencies:** Just like in case of migration groups, this segment is used to define modules on which the migration depends. When one of these required modules are missing / removed, the migration is automatically removed.
