@@ -32,7 +32,7 @@ I usually prefer to name project-specific custom modules with a prefix of _c11n_
 
 Nothing fancy about the module file as such. It includes a basic project definition with certain dependencies on other modules. Though the _migrate_ module is in Drupal 8 core, we need most of these dependencies to enable / enhance migrations on the site:
 * **migrate**: Without the migrate module, we cannot migrate!
-* **migrate_plus**: Improves the core _migrate_ module by adding certain functionality like migration groups. Apart from that this module includes an example module which I referred to on various occations while writing this module.
+* **migrate_plus**: Improves the core _migrate_ module by adding certain functionality like migration groups. Apart from that this module includes an example module which I referred to on various occasions while writing this module.
 * **migrate_tools**: General-purpose drush commands and basic UI for managing migrations.
 * **migrate_source_csv**: The core _migrate_ module provides a basic framework for migrations, which does not include support for specific data sources. This module makes the _migrate_ module work with CSV data sources. There are other modules which provide support for other data sources like JSON, XML, etc.
 * **node**: We will be importing _academic programs_ as nodes. Thus, we need the _node_ module.
@@ -72,7 +72,7 @@ Now that we have a module to put our migration scripts in and a migration group 
 
 In migration declaration file, we declare some meta-data about the migration:
 
-* **id:** A unique identifier for the migration. In this example, I allocated the ID _program_data_, hence, the migration declaration file has been named migrate_plus.migration._program_data_.yml. We can execute specific migrations with the command `drush migrate-import --idlist=ID1,ID2,ID3`.
+* **id:** A unique identifier for the migration. In this example, I allocated the ID _program_data_, hence, the migration declaration file has been named migrate_plus.migration._program_data_.yml. We can execute specific migrations with the command `drush migrate-import ID`.
 * **label:** A human-friendly name of the migration as it would in the UI.
 * **migration_group:** This puts the migration into the migration group _c11n_ we created above. We can execute all migrations in a given group with the command `drush migrate-import --group=GROUP`.
 * **migration_tags:** Here we provide multiple tags for the migration and just like groups, we can execute all migrations with the same tag using the command `drush migrate-import --tag=TAG`
