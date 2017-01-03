@@ -24,6 +24,7 @@ migration_group: c11n
 # tag. That way, we can run all academic-program-related migrations
 # using one command.
 migration_tags:
+  - node
   - academic program
 # Source.
 #
