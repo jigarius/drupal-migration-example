@@ -146,6 +146,18 @@ process:
       plugin: callback
       callable: strtolower
       source: Level
+    # If you notice the program.data.csv file, one of the programs
+    # does not have any "Level" value. For programs without any "Level",
+    # the client wants us to treat it as "graduate".
+    #
+    # For cases where we have some values but we need to implement a
+    # fallback value when a value is not available, we use the
+    # "default_value" plugin. In this case, I use this plugin before
+    # the "static_map" so that the "static_map" plugin as a value to
+    # work with.
+    -
+      plugin: default_value
+      default_value: graduate
     # Once transformed to lower-case, we would like to transform the old
     # value in to a new one. This switch-case kind of an operation can
     # be handled by the plugin "static_map" which helps us map existing
