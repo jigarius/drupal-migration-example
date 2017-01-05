@@ -23,7 +23,7 @@ As per project requirements, we wish to import certain data for an educational a
 
 Before we start with actual migrations, there are certain things which I would point out so as to ensure that you can run your migrations without trouble.
 
-* Though the basic migration framework is a part of the D8 core as the migrate module, to be able to execute migrations, you must install the migrate_tools. You can use the command drush migrate-import --all to execute all migrations. In this tutorial, we also install some other modules like [migrate_plus](https://www.drupal.org/project/migrate_plus), [migrate_source_csv](https://www.drupal.org/project/migrate_source_csv).
+* Though the basic migration framework is a part of the D8 core as the migrate module, to be able to execute migrations, you must install the [migrate_tools](https://www.drupal.org/project/migrate_tools) module. You can use the command drush migrate-import --all to execute all migrations. In this tutorial, we also install some other modules like [migrate_plus](https://www.drupal.org/project/migrate_plus), [migrate_source_csv](https://www.drupal.org/project/migrate_source_csv).
 * Migration definitions in Drupal 8 are in YAML files, which is great. But the fact that they are located in the `config/install` directory implies that these YAML files are imported when the module is installed. Hence, any subsequent changes to the YAML files would not be detected untill the module is re-installed. We can to do that by re-importing the relevant configurations like `drush config-import --partial --source=path/to/module/config/install`.
 * While writing a migration, you would usually be updating your migration over and over and re-running them to see how things go. So, to do this quickly, you can re-install the module containing your custom migrations (in this case the _c11n_migrate_ module) and execute the relevant migrations in a single command like `drush config-import --partial --source=sites/sandbox.com/modules/c11n_migrate/config/install -y && drush migrate-import --group=c11n --update -y`.
 * To execute the migrations in this example, you can download this repo and rename the downloaded directory to c11n_migrate. It should work without issues with a _standard_ Drupal 8 install.
@@ -90,7 +90,7 @@ Once done with the meta-data, we define the source of the migration data with th
 * **plugin:** The plugin responsible for reading the source data. In our case we use the _migrate_source_csv_ module which provides the source plugin _csv_.
 * **path:** Path to the data source file - in this case, the [program.data.csv](import/program/program.data.csv) file.
 * **header_row_count:** This is a plugin-specific parameter which allows us to skip a number of rows from the top of the CSV. I found this parameter in the plugin class file, but I'm sure it must also be mentioned in the documentation for the _migrate_source_csv_ module.
-* **keys:** This parameter defines a number of columns in the source data which form a unique key in the source data. Luckily in our case, the program.data.csv provides a unique ID column so things get easy for us in this migration. This unique key will be used by the migrate module to relate records from the source with the records created in our Drupal site. With this relation, the migrate module can interpret changes in the source data and update the relevant data on the site. To execute an update, we use the parameter `--update` while our `drush migrate-import` command.
+* **keys:** This parameter defines a number of columns in the source data which form a unique key in the source data. Luckily in our case, the program.data.csv provides a unique ID column so things get easy for us in this migration. This unique key will be used by the migrate module to relate records from the source with the records created in our Drupal site. With this relation, the migrate module can interpret changes in the source data and update the relevant data on the site. To execute an update, we use the parameter `--update` with our `drush migrate-import` command.
 * **fields:** This parameter defines provides a description for the various columns available in the CSV data source. These descriptions just appear in the UI and explain purpose behind each column of the CSV.
 
 # Migration definition: Destination
@@ -110,7 +110,7 @@ If you ever wrote a migration in an earlier version of Drupal, you might already
 
 * **title:** An easy property to start with, we just assign the _Title_ column of the CSV as the _title_ property of the node.
 * **sticky:** Though Drupal can apply the default value for this property if we skip it, I wanted to demonstrate how to specify a default value for a property. We use the _default_value_ plugin with the _default_value_ parameter to make the imports non-sticky with _sticky = 0_.
-* **uid:** Similarly we specify default owner for the article as _root_ with _uid = 1_.
+* **uid:** Similarly we specify default owner for the article as the administrative user with _uid = 1_.
 * **body:** The _body_ is a filtered long text field and has various sub-properties we can set. So, we copy the _Body_ column from the CSV file to the _body/value_ property (instead of assigning it to just _body_). In the next line, we specify the _body/format_ property as _restricted_html_. Similary, one can also add a custom summary for the nodes using the _body/summary_ property. However, we should keep in mind that while defining these sub-properties, we need to wrap the property name in quotes because we have a `/` in the property name.
 * **field_program_level:** With this property we get to try out the useful _static_map_ plugin. Here, the source data uses the values _graduate/undergraduate_ whereas the destination field only accepts _gr/ug_. In Drupal 7, we would have written a few lines of code in a _ProgramDataMigration::prepareRow()_ method, but in Drupal 8, we just write some more YAML. Here, we have the plugin specifications as usual, but we have small dashes with which we are actually defining an array of plugins or a _plugin pipeline_. With the first plugin, we call the function _strtolower_ (with `callback: strtolower`) on the _Level_ property (with `source: Level`). Once the old value is in lower case, we pass it through the _static_map_ (with `plugin: static_map`) and define a map of new values which should be used instead of old values (with the `map` element). Done!
 
@@ -121,7 +121,7 @@ With the parameters above, we can write basic migrations with basic data-manipul
 This section is about migrating relations between two entities. Before jumping to this section, one must ensure that a migration has already been written to import the target entities. In our example, we wish to associate _tags_ (taxonomy terms) to _academic programs_ (nodes). For that, we need to import taxonomy terms and we do that in [migrate_plus.migration.program_tags.yml](config/install/migrate_plus.migration.program_tags.yml). In the migration for _tags_ data, we use the tag text as a unique key for the tags. This is because:
 
 * The tags data-source, [program.tags.csv](import/program/program.tags.csv), does not provide any unique key for the tags.
-* The academic programs data-source, [program.data.csv](import/program/program.tags.csv), refers to the tags using the tag text (instead of unique IDs).
+* The academic programs data-source, [program.data.csv](import/program/program.data.csv), refers to the tags using the tag text (instead of unique IDs).
 
 Once the tag data is imported, all we have to do is add some simple lines of YAML in the [migration definition for academic programs](config/install/migrate_plus.migration.program_data.yml) to tell Drupal how to migrate the _field_tags_ property of academic programs. As we did above for _program_level_ we will be specifying multiple plugins for this property:
 
@@ -130,13 +130,13 @@ Once the tag data is imported, all we have to do is add some simple lines of YAM
 
 As simple as it may sound, this is all that is needed to associate the tags to the academic programs!
 
-For the sake of demonstration, I also included an alternative approach using a custom callback. For the sake of demonstration, I use this technique for the migration of _field_program_type_ property. For program type, I wrote a simple function which does the following:
+For the sake of demonstration, I also included an alternative approach for the migration of the _field_program_type_ property. For program type, I wrote a simple function which does the following:
 
 * Takes a tag as an argument and checks if the tag exists in the _program_types_ taxonomy vocabulary.
 * Now, if the tag exists, the function returns the existing taxonomy term ID.
 * And if the tag does not exist, the tag is created and the function returns the newly created taxonomy term's ID.
 
-Finally, for the _process_ instructions for _field_program_type_, I use `plugin: callback` and refer to the custom function `_c11n_migrate_process_program_type`. So, during migration, for every _program type_, the custom callback is called and the custom callback translates the tag text into a taxonomy term ID which is then associated to the academic programs.
+Finally, for the _process_ instructions for _field_program_type_, I use `plugin: callback` and refer to the custom function [_c11n_migrate_process_program_type](c11n_migrate.module). So, during migration, for every _program type_, the custom callback is called and the custom callback translates the tag text into a taxonomy term ID which is then associated to the academic programs.
 
 To make sure that tag data is imported and available during the academic program migration, we specify the `program_tags` migration in the `migration_dependencies` for the `program_data` migration. Now, when you re-run these migrations, the taxonomy terms get associated to the academic program nodes.
 
