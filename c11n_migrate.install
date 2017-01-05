@@ -1,0 +1,48 @@
+<?php
+
+/**
+ * @file
+ * Handle install / uninstall events for the module.
+ */
+
+/**
+ * Implements hook_install().
+ *
+ * Copies migration source files to the public:// directory.
+ */
+function c11n_migrate_install() {
+
+  // Prepare destination directory.
+  $dest_directory = 'public://import/program';
+  file_prepare_directory($dest_directory, FILE_CREATE_DIRECTORY);
+
+  // Copy files to destination directory.
+  foreach(_c11n_migrate_source_files() as $filename => $file) {
+    file_unmanaged_copy($file->uri, $dest_directory . '/' . $file->filename, FILE_EXISTS_REPLACE);
+  }
+
+}
+
+/**
+ * Implements hook_uninstall().
+ *
+ * Deletes migration source files created during installation.
+ */
+function c11n_migrate_uninstall() {
+  $dest_directory = 'public://import/program';
+  file_unmanaged_delete_recursive($dest_directory);
+}
+
+/**
+ * Get a list of import source files.
+ *
+ * @return array
+ *   Import source files.
+ */
+function _c11n_migrate_source_files() {
+  $dirname = drupal_get_path('module', 'c11n_migrate') . '/import/program';
+  return file_scan_directory($dirname, '/.*/', [
+    'recurse' => FALSE,
+    'key' => 'filename',
+  ]);
+}

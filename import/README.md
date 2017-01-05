@@ -1,8 +1,6 @@
 # Import data
 
-For the module to work, please move this _import_ directory to the _files_ directory of the site you are working with.
-
-I have included migration source data (the CSV files and the associated image files) in the module's directory just to be able to pack everything together and push it to a GitHub repo for making it all available to you with ease. However, the project expects the _import_ directory to be located in the _public_ directory of the site you are working with. Hence, the files should be arranged such that, the _program.data.csv_ file is located at _public://import/program/program.data.csv_.
+For the module to work, this _import_ directory must be copied to the _files_ directory of the site you are working with. I have included migration source data (the CSV files and the associated image files) in the module's directory just to be able to pack everything together and push it to a GitHub repo for making it all available to you with ease. However, the project expects the _import_ directory to be located in the _public_ directory of the site you are working with. Hence, I implemented `hook_install` to arrange the files such that, the _program.data.csv_ file is located at _public://import/program/program.data.csv_.
 
 This is mainly because of the following reasons:
 
