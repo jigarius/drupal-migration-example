@@ -102,6 +102,10 @@ process:
   #
   # The below segnment makes the imported "program" nodes non-sticky.
   sticky: 'constants/bool_0'
+  # Similarly, we can specify whether we need or do not need the nodes
+  # to be promoted to the front page. Although nodes are promoted to
+  # front-page by default, I added the below line for demonstration.
+  promote: constants/bool_1
   # Similarly, we can define a default user for the imported nodes.
   uid: 'constants/uid_root'
   # Some fields have multiple properties! For example, the "body" field
