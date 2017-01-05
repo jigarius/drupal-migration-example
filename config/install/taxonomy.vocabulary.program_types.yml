@@ -1,0 +1,9 @@
+uuid: 87a9d000-6681-4cfe-bbd4-34b8cbe92a18
+langcode: en
+status: true
+dependencies: {  }
+name: 'Program types'
+vid: program_types
+description: 'A list of academic program types.'
+hierarchy: 0
+weight: 0

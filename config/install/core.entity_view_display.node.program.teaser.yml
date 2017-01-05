@@ -1,0 +1,45 @@
+uuid: e8f43b49-87cc-463c-b474-15d7ac183890
+langcode: en
+status: true
+dependencies:
+  config:
+    - core.entity_view_mode.node.teaser
+    - field.field.node.program.body
+    - field.field.node.program.field_image
+    - field.field.node.program.field_program_level
+    - field.field.node.program.field_program_type
+    - field.field.node.program.field_tags
+    - image.style.large
+    - node.type.program
+  module:
+    - image
+    - text
+    - user
+id: node.program.teaser
+targetEntityType: node
+bundle: program
+mode: teaser
+content:
+  body:
+    label: hidden
+    type: text_summary_or_trimmed
+    weight: 1
+    settings:
+      trim_length: 600
+    third_party_settings: {  }
+  field_image:
+    type: image
+    weight: 0
+    label: hidden
+    settings:
+      image_style: large
+      image_link: content
+    third_party_settings: {  }
+  links:
+    weight: 2
+    settings: {  }
+    third_party_settings: {  }
+hidden:
+  field_program_level: true
+  field_program_type: true
+  field_tags: true

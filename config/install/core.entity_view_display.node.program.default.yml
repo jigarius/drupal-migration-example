@@ -1,0 +1,58 @@
+uuid: 5f82c959-2141-4b4f-a173-81ed825bb13a
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.field.node.program.body
+    - field.field.node.program.field_image
+    - field.field.node.program.field_program_level
+    - field.field.node.program.field_program_type
+    - field.field.node.program.field_tags
+    - image.style.large
+    - node.type.program
+  module:
+    - image
+    - options
+    - text
+    - user
+id: node.program.default
+targetEntityType: node
+bundle: program
+mode: default
+content:
+  body:
+    label: hidden
+    type: text_default
+    weight: 1
+    settings: {  }
+    third_party_settings: {  }
+  field_image:
+    weight: 0
+    label: hidden
+    settings:
+      image_style: large
+      image_link: file
+    third_party_settings: {  }
+    type: image
+  field_program_level:
+    weight: 2
+    label: inline
+    settings: {  }
+    third_party_settings: {  }
+    type: list_default
+  field_program_type:
+    weight: 3
+    label: inline
+    settings:
+      link: true
+    third_party_settings: {  }
+    type: entity_reference_label
+  field_tags:
+    weight: 4
+    label: inline
+    settings:
+      link: true
+    third_party_settings: {  }
+    type: entity_reference_label
+hidden:
+  links: true

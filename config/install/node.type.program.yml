@@ -1,0 +1,17 @@
+uuid: ee8f77af-1591-4933-9576-b2bccefe0ebe
+langcode: en
+status: true
+dependencies:
+  module:
+    - menu_ui
+third_party_settings:
+  menu_ui:
+    available_menus: {  }
+    parent: ''
+name: 'Academic program'
+type: program
+description: 'Use <em>Academic program</em> to add educational courses to your site.'
+help: ''
+new_revision: false
+preview_mode: 1
+display_submitted: false
