@@ -136,6 +136,9 @@ process:
     # The first plugin we will use will be the "callable" plugin.
     # It will simply send in the source value "Level" to the "strtolower"
     # function to get rid of any upper-case characters in the source.
+    # We do this because one of the records says "Undergraduate" while
+    # there is another one says "UnderGraduate", which is weird. So, we
+    # standardize the values using the "strtolower" function on them.
     #
     # Unfortunately, the callback plugin does not accept any additional
     # arguments for the callback, but in our case we don't need them any way.
