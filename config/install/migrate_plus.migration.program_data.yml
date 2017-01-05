@@ -101,13 +101,13 @@ process:
   # "constants/NAME".
   #
   # The below segnment makes the imported "program" nodes non-sticky.
-  sticky: 'constants/bool_0'
+  sticky: constants/bool_0
   # Similarly, we can specify whether we need or do not need the nodes
   # to be promoted to the front page. Although nodes are promoted to
   # front-page by default, I added the below line for demonstration.
   promote: constants/bool_1
   # Similarly, we can define a default user for the imported nodes.
-  uid: 'constants/uid_root'
+  uid: constants/uid_root
   # Some fields have multiple properties! For example, the "body" field
   # can have the actual full text, a summary, etc. Values can be
   # assigned to specific properties using the syntax used below. We
@@ -128,7 +128,7 @@ process:
   # In the line below we tell Drupal to treat the _body_ as full HTML.
   # Since this value does not come from the data source, we use a constant
   # value defined in "source".
-  'body/format': 'constants/restricted_html'
+  'body/format': constants/restricted_html
   # For the "Level" of the program, the source has possible values
   # "Graduate" or "Undergraduate". However, in the field definition,
   # we accept only the values "gr" for graduate and "ug" for
