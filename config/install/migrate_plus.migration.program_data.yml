@@ -64,6 +64,14 @@ source:
     Image alt: Alternate text for the image for accessibilty.
     Tags: Comma-separated strings to use as tags.
     Fees: We will ignore this field as per requirement.
+  # Static values for the migration.
+  #
+  # We can assign hard-coded values to certain properties using constants.
+  constants:
+    bool_0: 0
+    bool_1: 1
+    uid_root: 1
+    restricted_html: restricted_html
 # Destination.
 destination:
   # We want to import data from a CSV file, but how do we save it?
@@ -88,18 +96,14 @@ process:
   # property value to the destination property.
   title: Title
   # There are certain destination fields which do not have
-  # corresponding source fields. In these cases, we can define
-  # a default value for those fields using the "default_value"
-  # plugin.
+  # corresponding source fields. for these, we defined constants
+  # in the "source" parameter. We can refer to them here as
+  # "constants/NAME".
   #
   # The below segnment makes the imported "program" nodes non-sticky.
-  sticky:
-    plugin: default_value
-    default_value: 0
+  sticky: 'constants/bool_0'
   # Similarly, we can define a default user for the imported nodes.
-  uid:
-    plugin: default_value
-    default_value: 1
+  uid: 'constants/uid_root'
   # Some fields have multiple properties! For example, the "body" field
   # can have the actual full text, a summary, etc. Values can be
   # assigned to specific properties using the syntax used below. We
@@ -118,11 +122,9 @@ process:
   # specifying the _format_ property of the _body_ field.
   #
   # In the line below we tell Drupal to treat the _body_ as full HTML.
-  # Since this value does not come from the data source, we use the default
-  # value plugin again.
-  'body/format':
-    plugin: default_value
-    default_value: restricted_html
+  # Since this value does not come from the data source, we use a constant
+  # value defined in "source".
+  'body/format': 'constants/restricted_html'
   # For the "Level" of the program, the source has possible values
   # "Graduate" or "Undergraduate". However, in the field definition,
   # we accept only the values "gr" for graduate and "ug" for
