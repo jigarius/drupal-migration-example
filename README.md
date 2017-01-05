@@ -34,7 +34,7 @@ I usually prefer to name project-specific custom modules with a prefix of _c11n_
 
 Nothing fancy about the module file as such. It includes a basic project definition with certain dependencies on other modules. Though the _migrate_ module is in Drupal 8 core, we need most of these dependencies to enable / enhance migrations on the site:
 * **migrate**: Without the migrate module, we cannot migrate!
-* **migrate_plus**: Improves the core _migrate_ module by adding certain functionality like migration groups. Apart from that this module includes an example module which I referred to on various occasions while writing this module.
+* **migrate_plus**: Improves the core _migrate_ module by adding certain functionality like migration groups and usage of YML files to define migrations. Apart from that this module includes an example module which I referred to on various occasions while writing my example module.
 * **migrate_tools**: General-purpose drush commands and basic UI for managing migrations.
 * **migrate_source_csv**: The core _migrate_ module provides a basic framework for migrations, which does not include support for specific data sources. This module makes the _migrate_ module work with CSV data sources. There are other modules which provide support for other data sources like JSON, XML, etc.
 * **node**: We will be importing _academic programs_ as nodes. Thus, we need the _node_ module.
