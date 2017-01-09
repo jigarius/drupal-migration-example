@@ -42,7 +42,7 @@ Nothing fancy about the module file as such. It includes a basic project definit
 
 # [c11n_migrate.module](c11n_migrate.module)
 
-In Drupal 8, unlike Drupal 7, a module only provides a _.module_ file if required. However, in our case, we use a custom callback for one of the migrations, so I had to create the _.module_ file and write the custom callback there.
+In Drupal 8, unlike Drupal 7, a module only provides a _.module_ file only if required. In our example, we do not need the `.module` file, so I have not created one.
 
 # Data source
 
@@ -130,13 +130,13 @@ Once the tag data is imported, all we have to do is add some simple lines of YAM
 
 As simple as it may sound, this is all that is needed to associate the tags to the academic programs!
 
-For the sake of demonstration, I also included an alternative approach for the migration of the _field_program_type_ property. For program type, I wrote a simple function which does the following:
+For the sake of demonstration, I also included an alternative approach for the migration of the _field_program_type_ property. For program type, I used the entity_generate plugin, which does the following:
 
-* Takes a tag as an argument and checks if the tag exists in the _program_types_ taxonomy vocabulary.
-* Now, if the tag exists, the function returns the existing taxonomy term ID.
-* And if the tag does not exist, the tag is created and the function returns the newly created taxonomy term's ID.
+* Looks up for an entity of a particular type (in this case, _taxonomy_term_) based on a particular property (in this case, _name_).
+* If no matching entity is found, an entity is created on the fly.
+* The ID of the existing / created entity is returned for use in the migration.
 
-Finally, for the _process_ instructions for _field_program_type_, I use `plugin: callback` and refer to the custom function [_c11n_migrate_process_program_type](c11n_migrate.module). So, during migration, for every _program type_, the custom callback is called and the custom callback translates the tag text into a taxonomy term ID which is then associated to the academic programs.
+So, in the _process_ instructions for _field_program_type_, I use `plugin: entity_generate`. So, during migration, for every _program type_, the entity_generate plugin is called and a particular taxonomy term is associated to the academic programs. The disadvantage of using the entity_generate method is when we rollback the migration, these taxonomy terms created during the migration would not be deleted.
 
 To make sure that tag data is imported and available during the academic program migration, we specify the `program_tags` migration in the `migration_dependencies` for the `program_data` migration. Now, when you re-run these migrations, the taxonomy terms get associated to the academic program nodes.
 

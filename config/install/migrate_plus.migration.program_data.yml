@@ -171,25 +171,36 @@ process:
       map:
         graduate: gr
         undergraduate: ug
-  # For the "Type" of the program, though we could use a text-list field,
-  # we have set up a taxonomy term reference field. Assuming the vocabulary
-  # exists and we have the names of the terms in the data source (CSV), we
-  # would need to convert the terms into IDs for use during the migration.
+  # For the "Type" of the program, could have used a text-list field,
+  # the client wants us to have a taxonomy term reference field.
   #
-  # Here, we refer to a custom callback which checks if the term exists. If
-  # the term exists, the callback returns the ID of the existing term,
-  # otherwise, the callback creates the term and returns the ID of the newly
-  # created term. Thus, all terms are imported in the process without much
-  # hassle.
+  # Assuming the vocabulary exists and we have the names of the terms
+  # in the data source (CSV), we would need to convert the terms into
+  # IDs for use during the migration. But in our data source, we do not
+  # have ID references - we have term names: "Part-time", "Full-time".
+  # We would have to create taxonomy terms for each program type and
+  # then associate the generated terms to the academic program.
   #
-  # This approach of importing comma-separated taxonomy terms can also be
-  # used with multiple terms, though we might have to add additional callbacks
-  # or modify our callback for handling splitting of values and converting
-  # each term name into an ID.
+  # Although this can be done in a number of ways, a nice way would
+  # be to use the entity_generate process plugin which comes with the
+  # migrate_plus module. We simply specify the type of entity we wish to
+  # create and the some properties we wish to populate. The plugin would
+  # automatically lookup entities (create one if needed) and associate
+  # the same with academic program.
+  #
+  # Using the entity_generate plugin the task might seem to be easy,
+  # however, it is always a better idea to use a separate migration for
+  # creating the taxonomy terms (like I demonstrated for tags) and then
+  # use the "migration" plugin to associate them to other entities.
+  # With a separate migration, rollbacks would delete these dependencies
+  # as well, unlike while using the entity_generate plugin.
   field_program_type:
-    plugin: callback
-    callable: _c11n_migrate_process_program_type
+    plugin: entity_generate
     source: Type
+    entity_type: taxonomy_term
+    bundle_key: vid
+    bundle: program_types
+    value_key: name
   # For the "Tags" of the program, we need to associate taxonomy terms (tags)
   # generated during the migration "term_tags". For this, we import all tags
   # using the "term_tags" migration in migrate_plus.migration.term_tags.yml.
