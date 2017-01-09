@@ -11,6 +11,13 @@ Though being written to serve as a simple example for demonstrating the basics o
 * Import of basic relationships between two entities, eg, articles and tags.
 * Import of images / files as Drupal _file_ entities and relating them to the relevant content.
 
+# Quick start
+
+* Download the files from this repo and put them in the `modules/custom/c11n_migrate` directory. `git clone https://github.com/jigarius/drupal-migration-example.git modules/custom/c11n_migrate`
+* Install the module. `drush en c11n_migrate -y`
+* See current status of the migrations. `drush migrate-status`
+* Run / re-run the migrations introduced by this module. `drush migrate-import --group=c11n --update`
+
 # The problem
 
 As per project requirements, we wish to import certain data for an educational and cultural insitution.
