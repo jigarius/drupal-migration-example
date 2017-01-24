@@ -1,9 +1,9 @@
 # Package info
-name: C11N Migrate
+name: 'C11N: Migrate'
 description: Module for performing site-specific migrations.
 type: module
 core: 8.x
-package: Migration
+package: Custom
 
 # Dependencies
 dependencies:
